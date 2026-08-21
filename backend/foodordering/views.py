@@ -689,11 +689,17 @@ def cancel_order(request, order_number):
   return Response({'message':'Order Cancelled Successfully'},status=200)
   
 
-@api_view(['POST']) 
+@api_view(['POST'])
 def add_review(request, food_id):
   user_id = request.data.get('user_id')
   rating = request.data.get('rating')
   comment = request.data.get('comment')
+  try:
+    rating = int(rating)
+  except (TypeError, ValueError):
+    return Response({'message':'Rating must be a whole number'}, status=400)
+  if rating < 1 or rating > 5:
+    return Response({'message':'Rating must be between 1 and 5'}, status=400)
   try:
     user = User.objects.get(id=user_id)
     food = Food.objects.get(id = food_id)
