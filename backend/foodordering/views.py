@@ -167,14 +167,17 @@ def make_unique_order_number():
     if not OrderAddress.objects.filter(order_number=num).exists():
       return num 
      
-@api_view(['POST'])  
+@api_view(['POST'])
 def place_order(request):
-  user_id = request.data.get('userId')  
+  user_id = request.data.get('userId')
   address =  request.data.get('address')
   payment_mode =  request.data.get('paymentMode')
-  card_number =  request.data.get('cardNumber')
-  expiry =  request.data.get('expiry')
-  cvv =  request.data.get('cvv')
+  # Card number, expiry and CVV are read by the client for its own on-screen
+  # validation but are never sent here, and never stored: this app has no
+  # payment gateway integration, and PaymentDetail is never read back for
+  # any card field (only payment_mode). Storing a raw card number is a
+  # liability with no offsetting use, and a CVV must never be persisted at
+  # all under card-network rules, even by a demo project.
 
   try:
     order = Order.objects.filter(user_id=user_id, is_order_placed=False)
@@ -191,9 +194,6 @@ def place_order(request):
       user_id = user_id,
       order_number = order_number,
       payment_mode = payment_mode,
-      card_number = card_number if payment_mode=='online' else None,
-      expiry_date = expiry if payment_mode=='online' else None,
-      cvv = cvv if payment_mode=='online' else None
     )
     return Response({"message":f'Order placed successfully! Order No : {order_number}'}, status=201)
   except:
