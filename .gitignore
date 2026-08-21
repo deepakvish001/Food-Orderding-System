@@ -1,0 +1,16 @@
+# No .gitignore existed at all — node_modules/, __pycache__/, *.pyc and the
+# local SQLite database were all being committed.
+
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Editor / OS
+.vscode/
+.DS_Store
