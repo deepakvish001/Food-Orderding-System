@@ -143,12 +143,18 @@ def update_cart_quantity(request):
   order_id = request.data.get('orderId')
   quantity = request.data.get('quantity')
   try:
+    quantity = int(quantity)
+  except (TypeError, ValueError):
+    return Response({"message":"Quantity must be a whole number"}, status=400)
+  if quantity < 1:
+    return Response({"message":"Quantity must be at least 1"}, status=400)
+  try:
     order = Order.objects.get(id=order_id, is_order_placed=False)
     order.quantity = quantity
     order.save()
     return Response({"message":"quantity updated successfully"},status=200)
   except:
-    return Response({"message":"Something went wrong!"}, status=400)  
+    return Response({"message":"Something went wrong!"}, status=400)
 
     
 @api_view(['DELETE'])  
